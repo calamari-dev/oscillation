@@ -1,0 +1,406 @@
+\newcommand{\jlreqkanjiskip}{0pt plus 0.1\zw minus 0.01\zw}
+\newcommand{\jlreqxkanjiskip}{0.25em plus 0.15em minus 0.06em}
+
+\documentclass[disablejfam,paper=a5,fontsize=9bp,head_space=20mm,line_length=112mm,number_of_lines=32]{jlreq}
+
+\usepackage{jlreq-narrowbaselines}
+\usepackage{xcolor}
+\usepackage[math-style=ISO,warnings-off={mathtools-colon}]{unicode-math}
+\usepackage[no-math,match]{luatexja-fontspec}
+\usepackage{mathtools}
+\usepackage[unicode,pdfusetitle]{hyperref}
+\usepackage{diffcoeff}
+\usepackage{tikz}
+\usepackage{cleveref}
+\usetikzlibrary{calc,perspective,positioning,patterns,decorations.pathmorphing}
+
+\title{振動と線型代数}
+\author{いか（GitHub: calamari-dev）}
+\date{\today}
+
+\crefname{equation}{式}{式}
+\crefname{figure}{図}{図}
+
+\setmainfont{STIX Two Text}
+\setsansfont{Liberation Sans}
+\setmainjfont[YokoFeatures={JFM=jlreq}]{BIZ UDMincho}
+\setsansjfont[YokoFeatures={JFM=jlreq}]{BIZ UDGothic}
+\setmathfont{STIX Two Math}
+\hypersetup{colorlinks=true,allcolors=blue}
+
+\newcommand{\impact}[1]{{\gtfamily\bfseries #1}}
+\newcommand{\iuni}{i}
+\newcommand{\krez}{\pi}
+\newcommand{\zvect}{\symbf{0}}
+\newcommand{\imat}{E}
+
+\newcommand{\mat}[1]{#1}
+\newcommand{\vect}[1]{\symbf{#1}}
+\newcommand{\rowpv}[1]{({\smash{\narrowbaselines\begin{matrix}#1\end{matrix}}})}
+\newcommand{\trps}[1]{\prescript{\smash{t}}{}{#1}}
+\newcommand{\Parallel}{\sslash}
+\DeclarePairedDelimiter{\pqty}{\lparen}{\rparen}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\section{2自由度系の振動}
+質量\(m\)の質点P，Qを，ばね定数\(k\)のばねで\cref{figure:initial}のように繋いだ．
+ただし，床はなめらかであり，ばねは初め自然長であるとする．
+各質点に初速を与えてから，Pの変位\(x_1\)，Qの変位\(x_2\)がどう変化するか考える．
+
+\begin{figure}[htbp]
+  \begin{minipage}{0.5\linewidth}
+    \centering
+    \begin{tikzpicture}
+      \fill[pattern=north west lines] (-0.25,0) rectangle (0,0.5);
+      \fill[pattern=north west lines] (4,0) rectangle (4.25,0.5);
+      \draw (0,0.5) -- (0,0) -- (4,0) -- (4,0.5);
+      \draw[decorate,decoration={coil,aspect=0.3,segment length=1.2mm,amplitude=2mm,pre length=1mm,post length=1mm}] (0,0.25) -- (1,0.25) node[midway,above=0.25cm] {$k$};
+      \draw (1.25,0.25) circle[radius=0.25cm] node {P};
+      \draw (1.25,0) -- (1.25,-0.075) node[below] {$x_1\mathrel{\smash{=0}}$};
+      \draw[decorate,decoration={coil,aspect=0.3,segment length=1.2mm,amplitude=2mm,pre length=1mm,post length=1mm}] (1.5,0.25) -- (2.5,0.25) node[midway,above=0.25cm] {$k$};
+      \draw (2.75,0.25) circle[radius=0.25cm] node {Q};
+      \draw (2.75,0) -- (2.75,-0.075) node[below] {$x_2\mathrel{\smash{=0}}$};
+      \draw[decorate,decoration={coil,aspect=0.3,segment length=1.2mm,amplitude=2mm,pre length=1mm,post length=1mm}] (3,0.25) -- (4,0.25) node[midway,above=0.25cm] {$k$};
+    \end{tikzpicture}
+    \caption{ばねで繋がれた2つの質点}
+    \label{figure:initial}
+  \end{minipage}%
+  \begin{minipage}{0.5\linewidth}
+    \centering
+    \begin{tikzpicture}
+      \fill[pattern=north west lines] (-0.25,0) rectangle (0,0.5);
+      \fill[pattern=north west lines] (4,0) rectangle (4.25,0.5);
+      \draw (0,0.5) -- (0,0) -- (4,0) -- (4,0.5);
+      \draw[decorate,decoration={coil,aspect=0.3,segment length=1.6mm,amplitude=2mm,pre length=1mm,post length=1mm}] (0,0.25) -- (1.5,0.25) node[midway,above=0.25cm] {$k$};
+      \draw (1.75,0.25) circle[radius=0.25cm] node {P};
+      \draw (1.25,-0.15) -- (1.25,0);
+      \draw (1.75,-0.15) -- (1.75,0);
+      \draw[->] (1.25,-0.075) -- (1.75,-0.075) node[midway,below] {$x_1$};
+      \draw[decorate,decoration={coil,aspect=0.3,segment length=0.8mm,amplitude=2mm,pre length=1mm,post length=1mm}] (2,0.25) -- (2.75,0.25) node[midway,above=0.25cm] {$k$};
+      \draw (3,0.25) circle[radius=0.25cm] node {Q};
+      \draw (2.75,-0.15) -- (2.75,0);
+      \draw (3,-0.15) -- (3,0);
+      \draw[->] (2.75,-0.075) -- (3,-0.075) node[midway,below] {$x_2$};
+      \draw[decorate,decoration={coil,aspect=0.3,segment length=0.8mm,amplitude=2mm,pre length=1mm,post length=1mm}] (3.25,0.25) -- (4,0.25) node[midway,above=0.25cm] {$k$};
+    \end{tikzpicture}
+    \caption{各質点に初速を与えた後の様子}
+  \end{minipage}
+\end{figure}
+
+P，Qの運動方程式は
+\begin{align}
+  ma_1 &= -kx_1+k(x_2-x_1) = k(-2x_1+x_2), \label{equation:motion1} \\
+  ma_2 &= -k(x_2-x_1)-kx_2 = k(x_1-2x_2) \label{equation:motion2}
+\end{align}
+であるが，このままでは\(x_1\)と\(x_2\)が入り組んでいて解きにくい．
+そこで，質点P，Qの重心Gを質量\(2m\)の質点とみなして，質点Gの変位\((x_1+x_2)/2\)の運動方程式を調べる．
+これは\cref{equation:motion1}と\cref{equation:motion2}を足せば得られて
+\begin{equation}
+  \label{equation:barycenter}
+  2m\frac{a_1+a_2}{2} = -2k\frac{x_1+x_2}{2}
+\end{equation}
+となる．\cref{equation:barycenter}は角振動数\(\sqrt{2k/(2m)}\)の単振動の式だから
+\begin{equation}
+  \label{equation:barycenter_position}
+  \frac{x_1+x_2}{2} = c\sin\pqty*{\sqrt{\frac{k}{m}}t}\quad\text{(\(c\)は振幅)}
+\end{equation}
+である．
+
+次に，質点P上にいる観測者から見た，質点Qの運動方程式を立てる．質点Pの加速度は\(0\)とは限らないので，この座標系は非慣性系である．
+よって，運動方程式には慣性力の項\(-ma_1\)が加わり，次のようになる．
+\begin{equation}
+  \label{equation:relative}
+  m(a_2-a_1) = (-k(x_2-x_1)-kx_2)+(-ma_1) = -3k(x_2-x_1)
+\end{equation}
+
+\cref{equation:relative}は角振動数\(\sqrt{3k/m}\)の単振動の式だから
+\begin{equation}
+  \label{equation:relative_position}
+  x_2-x_1 = d\sin\pqty*{\sqrt{\frac{3k}{m}}t}\quad\text{(\(d\)は振幅)}
+\end{equation}
+である．
+
+\cref{equation:barycenter_position}，\cref{equation:relative_position}から，
+\(x_1\)と\(x_2\)は以下のようになる．ただし\(c_1=c\)，\(c_2=d/2\)は，質点の初期速度から決まる\(t\)によらない数である．
+\begin{equation}
+  \label{equation:x1x2}
+  x_1 = c_1\sin(\omega t)-c_2\sin(\sqrt{3}\omega t),
+  \quad x_2 = c_1\sin(\omega t)+c_2\sin(\sqrt{3}\omega t)
+  \quad(\omega=\sqrt{k/m})
+\end{equation}
+
+以上の解法によって，質点P，Qの運動は計算できることが分かった．以下では，この解法を異なる視点から考察する．
+
+\section{重心運動・相対運動と座標系の回転}
+\((c_1,c_2)=(1,0)\)のときの\((x_1,x_2)\)を\(\vec{u}_1\)，\((c_1,c_2)=(0,1)\)のときの\((x_1,x_2)\)を\(\vec{u}_2\)としよう．
+このとき，\(\vec{x}=(x_1,x_2)\)は\cref{equation:x1x2}から\(c_1\vec{u}_1+c_2\vec{u}_2\)と表せる．
+
+ある時刻における\(\vec{u}_1\)，\(\vec{u}_2\)は\cref{figure:vecx1}，\cref{figure:vecx2}のようになり，\(xy\)平面上で単振動する．
+また，\cref{figure:vecx}を見ると，\(\vec{x}\)の各成分を表す式は複雑だが，\(\vec{x}\)を左回りに\(\krez/4\)だけ回転したベクトル\(\vec{y}\)は
+\[
+  \vec{y} = \sqrt{2}(-c_1\sin(\omega t),c_2\sin(\sqrt{3}\omega t))
+\]
+という，ごく簡単な式で表せることがわかる．
+
+\begin{figure}[htbp]
+  \begin{minipage}{\linewidth/3}
+    \centering
+    \begin{tikzpicture}[font=\small]
+      \draw[->] (-1.2,0) -- (2,0);
+      \draw[->] (0,-0.6) -- (0,2);
+      \draw[dashed] (-0.6,-0.6) -- (2,2);
+      \draw[dashed] (1.3,1.3) -- (1.3,0) node[below] {$\sin(\omega t)$};
+      \draw[dashed] (1.3,1.3) -- (0,1.3) node[left] {$\sin(\omega t)$};
+      \draw[thick,->] (0,0) -- (1.3,1.3) node[below right] {$\vec{u}_1$};
+    \end{tikzpicture}
+    \caption{\(\vec{u}_1\)}
+    \label{figure:vecx1}
+  \end{minipage}%
+  \begin{minipage}{\linewidth/3}
+    \centering
+    \begin{tikzpicture}[font=\small]
+      \draw[->] (-2,0) -- (1.2,0);
+      \draw[->] (0,-0.6) -- (0,2);
+      \draw[dashed] (-2,2) -- (0.6,-0.6);
+      \draw[dashed] (-1,1) -- (-1,0) node[below] {$-\sin(\sqrt{3}\omega t)$};
+      \draw[dashed] (-1,1) -- (0,1) node[right] {$\sin(\sqrt{3}\omega t)$};
+      \draw[thick,->] (0,0) -- (-1,1) node[below left] {$\vec{u}_2$};
+    \end{tikzpicture}
+    \caption{\(\vec{u}_2\)}
+    \label{figure:vecx2}
+  \end{minipage}%
+  \begin{minipage}{\linewidth/3}
+    \centering
+    \begin{tikzpicture}[font=\small]
+      \draw[->] (-1.2,0) -- (2,0);
+      \draw[->] (0,-0.6) -- (0,2);
+      \draw[dashed] (-1.2,1.2) -- (0.6,-0.6);
+      \draw[dashed] (-0.5,-0.5) -- (1.3,1.3);
+      \draw[thick,->] (0,0) -- (1,1) node[below right] {$c_1\vec{u}_1$};
+      \draw[thick,->] (0,0) -- (-0.5,0.5) node[below left] {$c_2\vec{u}_2$};
+      \draw[thick,->] (0,0) -- (0.5,1.5) node[right] {$c_1\vec{u}_1+c_2\vec{u}_2$};
+    \end{tikzpicture}
+    \caption{\(\vec{x}=c_1\vec{u}_1+c_2\vec{u}_2\)}
+    \label{figure:vecx}
+  \end{minipage}
+\end{figure}
+
+\(\vec{y}=(y_1,y_2)\)とおく．\(y_1+y_2\iuni\)は，\(\cos(\krez/4)+\iuni\sin(\krez/4)\)を\(x_1+x_2\iuni\)に掛けた値なので
+\[
+  y_1+y_2\iuni = \pqty*{\frac{1}{\sqrt{2}}+\frac{1}{\sqrt{2}}\iuni}(x_1+x_2\iuni)
+  = \frac{x_1-x_2}{\sqrt{2}}+\frac{x_1+x_2}{\sqrt{2}}\iuni
+\]
+である．したがって
+\[
+  \vec{y} = \frac{(x_1-x_2,x_1+x_2)}{\sqrt{2}}
+  = -\frac{1}{\sqrt{2}}(x_2-x_1,0)+\sqrt{2}\pqty*{0,\frac{x_1+x_2}{2}}
+\]
+となる．この式によれば，\(\vec{y}\)の第1成分は相対運動を，第2成分は重心運動をそれぞれ表している．
+
+つまり，\(\vec{x}\)の運動は\(\vec{u}_1\)の単振動と\(\vec{u}_2\)の単振動の和であり，
+相対運動と重心運動の運動方程式が単振動の式になったのは，それが\(\vec{x}\)を左方向に\(\krez/4\)回転するのと同等であるからといえる．
+
+ここまで\(\vec{u}_i\)を運動方程式の一般解から定義して議論を進めてきたが，
+逆に\(\vec{u}_i\)を運動方程式から直接計算して，\(x_1\)と\(x_2\)を式\(\vec{x}=c_1\vec{u}_1+c_2\vec{u}_2\)から求めることもできる．
+次節ではこちらの解法について，線型代数の観点から説明する．
+
+\section{固有ベクトルとの関係}
+以下に，質点P，Qの運動方程式(\ref{equation:motion1})，(\ref{equation:motion2})を再掲する．
+\[
+  ma_1 = k(-2x_1+x_2),\quad ma_2 = k(x_1-2x_2)
+\]
+
+これは，行列を用いれば
+\[
+  m\begin{pmatrix}a_1 \\ a_2\end{pmatrix} = k\begin{pmatrix}-2 & 1 \\ 1 & -2\end{pmatrix}\begin{pmatrix}x_1 \\ x_2\end{pmatrix},
+  \quad \begin{pmatrix}a_1 \\ a_2\end{pmatrix} = \frac{k}{m}\begin{pmatrix}-2 & 1 \\ 1 & -2\end{pmatrix}\begin{pmatrix}x_1 \\ x_2\end{pmatrix}
+\]
+と書き直せる．また，\(a_1=\diff*[2]{x_1}/{t}\)，\(a_2=\diff*[2]{x_2}/{t}\)だから
+\begin{equation}
+  \label{equation:matrix}
+  \diff*[2]{\vect{x}(t)}{t} = \mat{A}\vect{x}(t)
+  \quad\text{(\(\mat{A}=\begin{psmallmatrix}-2k/m & k/m \\ k/m & -2k/m\end{psmallmatrix}\)，\(\vect{x}(t)=\trps{\rowpv{x_1(t) & x_2(t)}}\)，\(\vect{x}(0)=\zvect\))}
+\end{equation}
+である．ただし，\(\vect{x}(0)=\zvect\)は「ばねは初め自然長であるとする」という仮定に対応する．
+
+ここで，次式を満たす\(t\)に依存しない\(\lambda_i\)，\(\vect{e}_i\neq\zvect\)が得られたとする．
+\begin{equation}
+  \label{equation:eigen}
+  \mat{A}\vect{e}_i = \lambda_i\vect{e}_i
+  \quad\text{(\(i=1,2\)，\(0>\lambda_1>\lambda_2\))}  
+\end{equation}
+
+このとき
+\[
+  \diff*[2]{(\sin(\sqrt{-\lambda_i}t)\vect{e}_i)}{t} = -(\sqrt{-\lambda_i})^2\sin(\sqrt{-\lambda_i}t)\vect{e}_i
+  = \sin(\sqrt{-\lambda_i}t)(\lambda_i\vect{e}_i)
+  = \sin(\sqrt{-\lambda_i}t)(\mat{A}\vect{e}_i)
+\]
+なので，\(\vect{u}_i(t)=\sin(\sqrt{-\lambda_i}t)\vect{e}_i\)は\cref{equation:matrix}の解になっている．
+したがって，\cref{equation:eigen}を満たす\(\lambda_i\)，\(\vect{e}_i\)の組を見つけられれば，\cref{equation:matrix}の単振動する解が得られる．
+
+まず，\(\lambda_i\)の条件を調べよう．
+\begin{align*}
+  \mat{A}\vect{e}_i = \lambda_i\vect{e}_i
+  &\iff(\lambda_i\imat-\mat{A})\vect{e}_i = \begin{pmatrix}\lambda_i+2k/m & -k/m \\ -k/m & \lambda_i+2k/m\end{pmatrix}\vect{e}_i = \zvect \\
+  &\iff\trps{\begin{pmatrix}\lambda_i+2k/m & -k/m\end{pmatrix}}\perp\vect{e}_i\mathrel{\text{かつ}}\trps{\begin{pmatrix}-k/m & \lambda_i+2k/m\end{pmatrix}}\perp\vect{e}_i \\
+  &\implies\trps{\begin{pmatrix}\lambda_i+2k/m & -k/m\end{pmatrix}}\Parallel\trps{\begin{pmatrix}-k/m & \lambda_i+2k/m\end{pmatrix}}
+\end{align*}
+だから，ベクトルの平行条件より，\(\lambda_i\)は\((\lambda_i+2k/m)^2-(-k/m)^2=0\)を満たす必要がある．
+この2次方程式の解は\(\lambda_i=-k/m,-3k/m\)であり，\(\lambda_1>\lambda_2\)なので\(\lambda_1=-k/m\)，\(\lambda_2=-3k/m\)である．
+
+次に，\(\mat{A}\vect{e}_i=\lambda_i\vect{e}_i\)を満たす\(\vect{e}_i\)を計算する．\(i=1\)のとき
+\[
+  (\lambda_1\imat-\mat{A})\vect{e}_i = \frac{k}{m}\begin{pmatrix}1 & -1 \\ -1 & 1\end{pmatrix}\vect{e}_1 = \zvect
+  \iff \vect{e}_1\Parallel\begin{pmatrix}1 \\ 1\end{pmatrix}
+\]
+なので，\(\lambda_1=-k/m\)，\(\vect{e}_1=\trps{\rowpv{1 & 1}}\)とすれば，\(\lambda_1\)，\(\vect{e}_1\)は\cref{equation:eigen}を満たす．
+
+同様に計算すると，\(\lambda_2=-3k/m\)，\(\vect{e}_2=\trps{\rowpv{-1 & 1}}\)は\cref{equation:eigen}を満たすことが確かめられる．
+こうして，\cref{equation:matrix}の単振動する2解
+\[
+  \vect{u}_1(t) = \sin\pqty*{\sqrt{\frac{k}{m}}t}\begin{pmatrix}1 \\ 1\end{pmatrix},
+  \quad\vect{u}_2(t) = \sin\pqty*{\sqrt{\frac{3k}{m}}t}\begin{pmatrix}-1 \\ 1\end{pmatrix}
+\]
+が得られた．
+
+\cref{figure:vecx1}，\cref{figure:vecx2}を見ると，\(\vect{u}_i(t)\)は前節で定義した\(\vec{u}_i\)と等しいことがわかる．
+よって，\cref{equation:matrix}の一般解は\(\vect{x}(t)=c_1\vect{u}_1(t)+c_2\vect{u}_2(t)\)となるはずである．
+
+実際に，\cref{equation:matrix}の一般解が\(\vect{x}(t)=c_1\vect{u}_1(t)+c_2\vect{u}_2(t)\)であることを確かめよう．
+\(\vect{r}(t)\)は\cref{equation:matrix}の解であるとする．\(\vect{e}_1\)，\(\vect{e}_2\)は1次独立だから，\(\vect{r}(t)\)は\(\vect{r}(t)=y_1(t)\vect{e}_1+y_2(t)\vect{e}_2\)と表せる．
+また，\(\mat{A}\vect{e}_i=\lambda_i\vect{e}_i\)なので
+\[
+  \mat{A}\vect{r}(t) = y_1(t)\mat{A}\vect{e}_1+y_2(t)\mat{A}\vect{e}_2
+  = y_1(t)(\lambda_1\vect{e}_1)+y_2(t)(\lambda_2\vect{e}_2)
+\]
+である．一方，\(y_1(t)\)と\(y_2(t)\)が2階微分できれば
+\[
+  \diff*[2]{\vect{r}(t)}{t} = \diff[2]{y_1(t)}{t}\vect{e}_1+\diff[2]{y_2(t)}{t}\vect{e}_2
+\]
+だから，\(\vect{r}(t)\)が\cref{equation:matrix}の解ならば
+\[
+  \diff[2]{y_1(t)}{t}\vect{e}_1+\diff[2]{y_2(t)}{t}\vect{e}_2 = \lambda_1y_1(t)\vect{e}_1+\lambda_2y_2(t)\vect{e}_2
+\]
+となる．\(\vect{e}_1\)，\(\vect{e}_2\)は1次独立だから
+\[
+  \diff[2]{y_i(t)}{t} = \lambda_iy_i(t)\quad(i=1,2)
+\]
+が成立する．\(\lambda_i<0\)なので，これは角振動数\(\sqrt{-\lambda_i}\)の単振動の式である．また，\(\vect{r}(0)=\zvect\)なので\(y_1(0)=y_2(0)=0\)である．
+したがって，\(y_i(t)\)は\(y_i(t)=c_i\sin(\sqrt{-\lambda_i}t)\)と表せて
+\[
+  \vect{r}(t) = c_1\sin(\sqrt{-\lambda_1}t)\vect{e}_1+c_2\sin(\sqrt{-\lambda_2}t)\vect{e}_2
+  = c_1\vect{u}_1(t)+c_2\vect{u}_2(t)
+\]
+である．
+
+以上により，\cref{equation:matrix}を満たす任意の\(\vect{r}(t)\)は，定数\(c_1\)，\(c_2\)を用いて\(\vect{r}(t)=c_1\vect{u}_1(t)+c_2\vect{u}_2(t)\)と表せる．
+一方，\(c_1\vect{u}_1(t)+c_2\vect{u}_2(t)\)は\(c_1\)，\(c_2\)の値によらず\cref{equation:matrix}の解なので，
+\(\vect{x}(t)=c_1\vect{u}_1(t)+c_2\vect{u}_2(t)\)は\cref{equation:matrix}の一般解である．
+
+実は，方程式\((\lambda+2k/m)^2-(-k/m)^2=0\)は\(\mat{A}\)の「\impact{固有方程式}」に，
+\(\vect{e}_i\)は\(\mat{A}\)の「\impact{固有ベクトル}」に相当する．最後に，これらの事項を既知とすれば，質点の個数を増やしても運動が解析できることを示す．
+
+\section{3自由度系の振動}
+\cref{figure:initial}に質量\(m\)の質点Rを追加し，\cref{figure:3points}のように，すべてのばねが自然長になるよう繋いだ．
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[font=\small]
+    \fill[pattern=north west lines] (-0.25,0) rectangle (0,0.5);
+    \fill[pattern=north west lines] (5.5,0) rectangle (5.75,0.5);
+    \draw (0,0.5) -- (0,0) -- (5.5,0) -- (5.5,0.5);
+    \draw[decorate,decoration={coil,aspect=0.3,segment length=1.2mm,amplitude=2mm,pre length=1mm,post length=1mm}] (0,0.25) -- (1,0.25) node[midway,above=0.25cm] {$k$};
+    \draw (1.25,0.25) circle[radius=0.25cm] node {P};
+    \draw (1.25,0) -- (1.25,-0.075) node[below] {$x_1\mathrel{\smash{=0}}$};
+    \draw[decorate,decoration={coil,aspect=0.3,segment length=1.2mm,amplitude=2mm,pre length=1mm,post length=1mm}] (1.5,0.25) -- (2.5,0.25) node[midway,above=0.25cm] {$k$};
+    \draw (2.75,0.25) circle[radius=0.25cm] node {Q};
+    \draw (2.75,0) -- (2.75,-0.075) node[below] {$x_2\mathrel{\smash{=0}}$};
+    \draw[decorate,decoration={coil,aspect=0.3,segment length=1.2mm,amplitude=2mm,pre length=1mm,post length=1mm}] (3,0.25) -- (4,0.25) node[midway,above=0.25cm] {$k$};
+    \draw (4.25,0.25) circle[radius=0.25cm] node {R};
+    \draw (4.25,0) -- (4.25,-0.075) node[below] {$x_3\mathrel{\smash{=0}}$};
+    \draw[decorate,decoration={coil,aspect=0.3,segment length=1.2mm,amplitude=2mm,pre length=1mm,post length=1mm}] (4.5,0.25) -- (5.5,0.25) node[midway,above=0.25cm] {$k$};
+  \end{tikzpicture}
+  \caption{ばねで繋がれた3つの質点}
+  \label{figure:3points}
+\end{figure}
+
+各質点に初速を与えると，Pの変位\(x_1\)，Qの変位\(x_2\)，Rの変位\(x_3\)はどう変化するか考える．
+P，Q，Rの運動方程式は
+\begin{align*}
+  m\diff[2]{x_1(t)}{t} &= -kx_1+k(x_2-x_1) = k(-2x_1+x_2), \\
+  m\diff[2]{x_2(t)}{t} &= -k(x_2-x_1)+k(x_3-x_2) = k(x_1-2x_2+x_3), \\
+  m\diff[2]{x_3(t)}{t} &= -k(x_3-x_2)-kx_3 = k(x_2-2x_3)
+\end{align*}
+であり，行列を用いれば
+\[
+  \diff*[2]{\vect{x}(t)}{t} = \frac{k}{m}\begin{pmatrix}-2 & 1 & 0 \\ 1 & -2 & 1 \\ 0 & 1 & -2\end{pmatrix}\vect{x}(t)
+  \quad\text{(\(\vect{x}(t)=\trps{\rowpv{x_1(t) & x_2(t) & x_3(t)}}\)，\(\vect{x}(0)=\zvect\))}
+\]
+と書き直せる．右辺を\((k/m)\mat{A}\vect{x}(t)\)とおく．\(\mat{A}\)の固有値は
+\begin{align*}
+  \det(\lambda\imat-\mat{A}) &= \begin{vmatrix}\lambda+2 & -1 & 0 \\ -1 & \lambda+2 & -1 \\ 0 & -1 & \lambda+2\end{vmatrix} = (\lambda+2)\begin{vmatrix}\lambda+2 & -1 \\ -1 & \lambda+2\end{vmatrix}-(-1)\begin{vmatrix}-1 & 0 \\ -1 & \lambda+2\end{vmatrix} \\
+  &= (\lambda+2)((\lambda+2)^2-1)-(\lambda+2) = (\lambda+2)((\lambda+2)^2-2)
+\end{align*}
+より\(-2-\sqrt{2}\)，\(-2\)，\(-2+\sqrt{2}\)である．これらを順に\(\lambda_1\)，\(\lambda_2\)，\(\lambda_3\)とおく．
+\(\mat{A}\)の固有値\(\lambda_i\)に属する固有空間を根気強く計算すると
+\[
+  \vect{e}_1=\trps{\begin{pmatrix}1 & -\sqrt{2} & 1\end{pmatrix}},
+  \quad\vect{e}_2=\trps{\begin{pmatrix}-1 & 0 & 1\end{pmatrix}},
+  \quad\vect{e}_3=\trps{\begin{pmatrix}1 & \sqrt{2} & 1\end{pmatrix}}
+\]
+が，それぞれ\(\mat{A}\)の固有値\(\lambda_1\)，\(\lambda_2\)，\(\lambda_3\)に属する固有ベクトルであることがわかる\footnote{よく見ると，\(\vect{e}_1\)，\(\vect{e}_2\)，\(\vect{e}_3\)はどの2つも互いに直交している．これは\(\mat{A}\)が対称行列であることに起因する．}．
+したがって，式
+\[
+  \mat{P}^{-1}\mat{A}\mat{P} = \begin{pmatrix}\lambda_1 & 0 & 0 \\ 0 & \lambda_2 & 0 \\ 0 & 0 & \lambda_3\end{pmatrix}
+  \quad\text{(\(\mat{P}=\rowpv{\vect{e}_1 & \vect{e}_2 & \vect{e}_3}\))}
+\]
+が成立する．\(\diff*[2]{\vect{x}(t)}/{t}=(k/m)\mat{A}\vect{x}(t)\)の両辺に左から\(\mat{P}^{-1}\)を掛けると
+\[
+  \diff*[2]{\mat{P}^{-1}\vect{x}(t)}{t} = \frac{k}{m}\mat{P}^{-1}\mat{A}\vect{x}(t)
+  = \frac{k}{m}\begin{pmatrix}\lambda_1 & 0 & 0 \\ 0 & \lambda_2 & 0 \\ 0 & 0 & \lambda_3\end{pmatrix}\mat{P}^{-1}\vect{x}(t)
+\]
+となるので，\(\vect{y}(t)=\mat{P}^{-1}\vect{x}(t)=\trps{\rowpv{y_1(t) & y_2(t) & y_3(t)}}\)は
+\[
+  \diff*[2]{\begin{pmatrix}y_1(t) \\ y_2(t) \\ y_3(t)\end{pmatrix}}{t}
+  = \frac{k}{m}\begin{pmatrix}\lambda_1 & 0 & 0 \\ 0 & \lambda_2 & 0 \\ 0 & 0 & \lambda_3\end{pmatrix}\begin{pmatrix}y_1(t) \\ y_2(t) \\ y_3(t)\end{pmatrix},
+  \quad\diff[2]{y_i(t)}{t} = -\frac{-\lambda_ik}{m}y_i(t)\quad(i=1,2)
+\]
+を満たす．よって，各\(y_i(t)\)は角振動数\(\sqrt{-\lambda_ik/m}\)で単振動する．
+また，\(\vect{y}(0)=\mat{P}^{-1}\vect{x}(0)=\zvect\)なので，\(y_i(t)\)は
+\[
+  y_i(t) = c_i\sin\pqty[\Bigg]{\sqrt{\frac{-\lambda_ik}{m}}t}\quad(i=1,2,3)
+\]
+と表せる．したがって
+\[
+  \vect{x}(t) = \mat{P}\vect{y}(t) = \sum_{i=1}^3c_i\sin\pqty[\Bigg]{\sqrt{\frac{-\lambda_ik}{m}}t}\vect{e}_i
+\]
+である．
+
+\begin{figure}[htbp]
+  \begin{minipage}{0.5\linewidth}
+    \centering
+    \begin{tikzpicture}[3d view={110}{35},font=\small]
+      \draw[->] (-1,0,0) -- (1.5,0,0) node[below] {$x$};
+      \draw[->] (0,-1,0) -- (0,1.5,0) node[right] {$y$};
+      \draw[->] (0,0,-1) -- (0,0,1.5) node[above] {$z$};
+      \draw[thick,->] (0,0,0) -- (1,{-sqrt(2)},1) node[left] {$\vect{e}_1$};
+      \draw[thick,->] (0,0,0) -- (-1,0,1) node[above] {$\vect{e}_2$};
+      \draw[thick,->] (0,0,0) -- (1,{sqrt(2)},1) node[right] {$\vect{e}_3$};
+    \end{tikzpicture}
+  \end{minipage}%
+  \begin{minipage}{0.5\linewidth}
+    \centering
+    \begin{tikzpicture}[3d view={0}{90},font=\small]
+      \draw[->] (-1,0,0) -- (1.2,0,0) node[right] {$x$};
+      \draw[->] (0,-1,0) -- (0,1.2,0) node[above] {$y$};
+      \draw[thick,->] (0,0,0) -- (1,{-sqrt(2)},1) node[right] {$\vect{e}_1$};
+      \draw[thick,->] (0,0,0) -- (-1,0,1) node[left] {$\vect{e}_2$};
+      \draw[thick,->] (0,0,0) -- (1,{sqrt(2)},1) node[right] {$\vect{e}_3$};
+    \end{tikzpicture}
+  \end{minipage}
+  \caption{\(\vect{e}_1\)，\(\vect{e}_2\)，\(\vect{e}_3\)}
+\end{figure}
+\end{document}
