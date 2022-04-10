@@ -366,7 +366,7 @@ P，Q，Rの運動方程式は
 \[
   \diff*[2]{\begin{pmatrix}y_1(t) \\ y_2(t) \\ y_3(t)\end{pmatrix}}{t}
   = \frac{k}{m}\begin{pmatrix}\lambda_1 & 0 & 0 \\ 0 & \lambda_2 & 0 \\ 0 & 0 & \lambda_3\end{pmatrix}\begin{pmatrix}y_1(t) \\ y_2(t) \\ y_3(t)\end{pmatrix},
-  \quad\diff[2]{y_i(t)}{t} = -\frac{-\lambda_ik}{m}y_i(t)\quad(i=1,2)
+  \quad\diff[2]{y_i(t)}{t} = -\frac{-\lambda_ik}{m}y_i(t)\quad(i=1,2,3)
 \]
 を満たす．よって，各\(y_i(t)\)は角振動数\(\sqrt{-\lambda_ik/m}\)で単振動する．
 また，\(\vect{y}(0)=\mat{P}^{-1}\vect{x}(0)=\zvect\)なので，\(y_i(t)\)は
@@ -375,7 +375,9 @@ P，Q，Rの運動方程式は
 \]
 と表せる．したがって
 \[
-  \vect{x}(t) = \mat{P}\vect{y}(t) = \sum_{i=1}^3c_i\sin\pqty*{\sqrt{\frac{-\lambda_ik}{m}}t}\vect{e}_i
+  \vect{x}(t) = \mat{P}\vect{y}(t)
+  = \sum_{i=1}^3y_i(t)\vect{e}_i
+  = \sum_{i=1}^3c_i\sin\pqty*{\sqrt{\frac{-\lambda_ik}{m}}t}\vect{e}_i
 \]
 である．
 
